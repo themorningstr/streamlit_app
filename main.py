@@ -1,12 +1,12 @@
 import streamlit as st
-from streamlit.components.v1 import components
-# from first import page_one
-# from second import page_two
+# from sklearn.metrics import plot_confusion_matrix, plot_roc_curve, plot_precision_recall_curve
+import numpy as np
+import pandas as pd
 
 
 def page_one():
 
-    st.title("Churn Data")
+    st.title("User Login")
 
     UseCaseName = st.text_input("Use Case Name")
 
@@ -26,7 +26,7 @@ def page_one():
         st.write(FirstName ,LastName)
 
     
-    st.markdown("<br>", unsafe_allow_html = True)
+    # st.markdown("<br>", unsafe_allow_html = True)
 
     if 'clicked' not in st.session_state:
         st.session_state.clicked = False
@@ -34,7 +34,7 @@ def page_one():
     def click_button():
         st.session_state.clicked = True
 
-    st.button("Next", key="Next Button",on_click=click_button, help="Click to go on next section")
+    st.button("Next", key="Next Button", on_click = click_button, help="Click to go on next section")
 
     if st.session_state.clicked:
         st.session_state.page = "page_two"
@@ -42,12 +42,14 @@ def page_one():
 
 def page_two():
 
+    st.title("Dataset & Model Parameter")
+
     st.header("Dataset", divider = "orange")
 
-    Data_Path = st.text_input("Dataset Path:")
+    st.text_input("Dataset Path:")
 
     st.header("Model", divider = "orange")
-    Model_type = st.selectbox("Model Type:", ["XGBoost", "Random Forest Classifier", "Logistic Regression"])
+    st.selectbox("Model Type:", ["XGBoost", "Random Forest Classifier", "Logistic Regression"])
 
     col3, col4, col5 = st.columns(3)
 
@@ -68,12 +70,26 @@ def page_two():
 
 def page_three():
 
-    st.header("Model Traning")
+    st.header("Model Traning", divider = "orange")
+
+    col1, col2 = st.columns((2,1))
+    with col1:
+        st.write("MODEL: ")
+
+    with col2:
+        train_status = st.radio("Model Training", ["Trained", "Not Trained"])
+
+        if train_status == "Train":
+            success = train_model()
+
+            # Change radio button color based on training success
+            if success:
+                st.markdown('<style>div[data-baseweb="radio"] label {color: green;}</style>', unsafe_allow_html=True)
+            else:
+                st.markdown('<style>div[data-baseweb="radio"] label {color: red;}</style>', unsafe_allow_html=True)
 
 
-
-
-
+    accuracy_and_visualization()
 
 
     if 'clicked' not in st.session_state:
@@ -82,43 +98,93 @@ def page_three():
     def click_button():
         st.session_state.clicked = True
 
-    st.button("Prediction", key="prediction_button", on_click=click_button, help="Click on button for model predition")
+    st.button("Prediction", key="prediction_button", on_click = click_button, help="Click on button for model predition")
 
     if st.session_state.clicked:
         st.session_state.page = "page_four"
 
+def train_model():
+    success = True  
+    return success
 
-    
 
 def page_four():
 
-    def PredictionResult():
+    def click_button():
+        st.session_state.clicked = True
 
-        pass
-
-    st.header("Model Prediction")
+    st.header("Model Prediction", divider = "orange")
 
     col1, col2 = st.columns((2,1))
     with col1:
         Predition_Data_Path = st.text_input("Prediction Dataset Path:")
     
     with col2:
-        submit_button = st.button("Submit", key="submit_button", help="Click on button to submit dataset")
-        # st.write("Text submitted:", Predition_Data_Path)
+        st.button("Submit", key="submit_button", help="Click on button to submit dataset")
+
+    if 'clicked' not in st.session_state:
+        st.session_state.clicked = False
+
+    st.button("Predict", key="predict_button", on_click = click_button, help="Click on button for getting prediction result")
+
+    if st.session_state.clicked:
+        #TODO :- Add functionality for drawing graphs from predction result
+        accuracy_and_visualization()
+
+
+def accuracy_and_visualization():
+
+    with st.container(border = True):
+        precision, recall = st.columns(2)
+
+        with precision:
+            st.number_input("Precision:")
         
-        # if col2.button("Submit", use_container_width=True):
-        #     st.write("Text submitted:", Predition_Data_Path)
+        with recall:
+            st.number_input("Recall:")
 
+        f1, accuracy = st.columns(2)
 
+        with f1:
+            st.number_input("F1-Score:")
+        
+        with accuracy:
+            st.number_input("Accuracy:")
 
-    predict_button = st.button("Predict", key="predict_button", on_click = PredictionResult, help="Click on button for getting prediction result")
+    with st.container(border = True):
+        st.subheader("ROC Curve", divider = "orange")
+        # plot_roc_curve(model, x_test, y_test)
+        st.bar_chart(np.random.randn(50, 3))
+        # st.pyplot()
 
-   
+    with st.container(border = True):
+        st.subheader("Confusion Matrix", divider = "orange")
+        # plot_confusion_matrix(model, x_test, y_test, display_labels = class_names)
+        chart_data = pd.DataFrame(
+        {
+            "col1": np.random.randn(20),
+            "col2": np.random.randn(20),
+            "col3": np.random.choice(["A", "B", "C"], 20),
+        }
+        )
 
+        st.area_chart(chart_data, x="col1", y="col2", color="col3")
 
+        # st.pyplot()
 
+    with st.container(border = True):
+        st.subheader("Precision-Recall Curve", divider = "orange")
+        # plot_precision_recall_curve(model, x_test, y_test)
+        chart_data = pd.DataFrame(
+        {
+            "col1": np.random.randn(20),
+            "col2": np.random.randn(20),
+            "col3": np.random.choice(["A", "B", "C"], 20),
+        }
+        )
 
-
+        st.line_chart(chart_data, x="col1", y="col2", color="col3")
+        # st.pyplot()
 
 
 
