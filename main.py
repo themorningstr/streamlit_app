@@ -1,7 +1,11 @@
 import streamlit as st
-# from sklearn.metrics import plot_confusion_matrix, plot_roc_curve, plot_precision_recall_curve
 import numpy as np
 import pandas as pd
+from utils import (
+    accuracy_and_visualization, 
+    train_model,
+    model_table
+    )
 
 
 def page_one():
@@ -54,7 +58,7 @@ def page_two():
     col3, col4, col5 = st.columns(3)
 
     with col3:
-        parameter = st.number_input("LR:", min_value = 0.00000001, max_value = 0.00023, step=0.000001)
+        st.number_input("LR:", min_value = 0.00000001, max_value = 0.00023, step=0.000001)
 
 
     if 'clicked' not in st.session_state:
@@ -72,6 +76,11 @@ def page_three():
 
     st.header("Model Traning", divider = "orange")
 
+    st.subheader("Model Table", divider = "orange")
+
+    with st.container(border = True):
+        model_table()
+
     col1, col2 = st.columns((2,1))
     with col1:
         st.write("MODEL: ")
@@ -88,9 +97,7 @@ def page_three():
             else:
                 st.markdown('<style>div[data-baseweb="radio"] label {color: red;}</style>', unsafe_allow_html=True)
 
-
     accuracy_and_visualization()
-
 
     if 'clicked' not in st.session_state:
         st.session_state.clicked = False
@@ -102,10 +109,6 @@ def page_three():
 
     if st.session_state.clicked:
         st.session_state.page = "page_four"
-
-def train_model():
-    success = True  
-    return success
 
 
 def page_four():
@@ -130,61 +133,6 @@ def page_four():
     if st.session_state.clicked:
         #TODO :- Add functionality for drawing graphs from predction result
         accuracy_and_visualization()
-
-
-def accuracy_and_visualization():
-
-    with st.container(border = True):
-        precision, recall = st.columns(2)
-
-        with precision:
-            st.number_input("Precision:")
-        
-        with recall:
-            st.number_input("Recall:")
-
-        f1, accuracy = st.columns(2)
-
-        with f1:
-            st.number_input("F1-Score:")
-        
-        with accuracy:
-            st.number_input("Accuracy:")
-
-    with st.container(border = True):
-        st.subheader("ROC Curve", divider = "orange")
-        # plot_roc_curve(model, x_test, y_test)
-        st.bar_chart(np.random.randn(50, 3))
-        # st.pyplot()
-
-    with st.container(border = True):
-        st.subheader("Confusion Matrix", divider = "orange")
-        # plot_confusion_matrix(model, x_test, y_test, display_labels = class_names)
-        chart_data = pd.DataFrame(
-        {
-            "col1": np.random.randn(20),
-            "col2": np.random.randn(20),
-            "col3": np.random.choice(["A", "B", "C"], 20),
-        }
-        )
-
-        st.area_chart(chart_data, x="col1", y="col2", color="col3")
-
-        # st.pyplot()
-
-    with st.container(border = True):
-        st.subheader("Precision-Recall Curve", divider = "orange")
-        # plot_precision_recall_curve(model, x_test, y_test)
-        chart_data = pd.DataFrame(
-        {
-            "col1": np.random.randn(20),
-            "col2": np.random.randn(20),
-            "col3": np.random.choice(["A", "B", "C"], 20),
-        }
-        )
-
-        st.line_chart(chart_data, x="col1", y="col2", color="col3")
-        # st.pyplot()
 
 
 
